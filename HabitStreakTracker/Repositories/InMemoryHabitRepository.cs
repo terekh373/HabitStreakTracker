@@ -1,6 +1,6 @@
 ﻿using HabitStreakTracker.Models;
 
-namespace HabitStreakTracker.Services
+namespace HabitStreakTracker.Repositories
 {
     public class InMemoryHabitRepository : IHabitRepository
     {

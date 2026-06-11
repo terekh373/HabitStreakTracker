@@ -36,12 +36,7 @@
             $"{Name} ({Type}) — стрік: {CurrentStreak()}, найдовший: {LongestStreak()}, " +
             $"за 7 днів: {CompletionRateLast7Days():F0}%";
 
-        public void MarkDoneToday()
-        {
-            var today = DateOnly.FromDateTime(DateTime.Now);
-            if (!_dates.Contains(today)) _dates.Add(today);
-        }
-
+        public void MarkDoneToday() => _dates.Add(DateOnly.FromDateTime(DateTime.Today));
         public int CurrentStreak()
         {
             var today = DateOnly.FromDateTime(DateTime.Today);

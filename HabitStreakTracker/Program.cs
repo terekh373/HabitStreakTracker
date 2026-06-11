@@ -1,5 +1,5 @@
 ﻿using HabitStreakTracker.Models;
-using HabitStreakTracker.Services;
+using HabitStreakTracker.Repositories;
 
 namespace HabitStreakTracker
 {
@@ -10,7 +10,6 @@ namespace HabitStreakTracker
             Console.WriteLine("Welcome to Habit Streak Tracker!");
 
             InMemoryHabitRepository service = new InMemoryHabitRepository();
-            string habitName = string.Empty;
 
             while (true)
             {
@@ -37,24 +36,16 @@ namespace HabitStreakTracker
                 switch (choice)
                 {
                     case 1:
-                        Console.WriteLine(">    Enter the name of the habit: ");
-                        habitName = Console.ReadLine();
-                        Console.WriteLine(">    Enter the type of the habit (0 - Daily, 1 - Weekly, 2 - Monthly): ");
-                        if (!int.TryParse(Console.ReadLine(), out int habitType))
-                        {
-                            Console.WriteLine("     Invalid input. Please enter a number.");
-                            break;
-                        }
-                        else if (habitType < 0 || habitType > 2)
+                        if (!TryReadHabitName(out var name1)) break;
+                        Console.WriteLine(">    Enter the type (0 - Daily, 1 - Weekly, 2 - Monthly): ");
+                        if (!int.TryParse(Console.ReadLine(), out int habitType) || habitType < 0 || habitType > 2)
                         {
                             Console.WriteLine("     Invalid habit type.");
                             break;
                         }
-                        Console.WriteLine(">    Enter the description of the habit: ");
-                        string habitDescription = Console.ReadLine();
-
-                        service.Add(new Habit(habitName, (HabitType)habitType, habitDescription));
-
+                        Console.WriteLine(">    Enter the description: ");
+                        string? habitDescription = Console.ReadLine();
+                        service.Add(new Habit(name1, (HabitType)habitType, habitDescription));
                         break;
                     case 2:
                         if (!TryReadHabitName(out var name2)) break;
@@ -115,18 +106,14 @@ namespace HabitStreakTracker
                         if (!TryReadHabitName(out var name8)) break;
                         var habit8 = service.Get(name8);
                         if (habit8 != null)
-                        {
-                            habit8.LongestStreak();
-                        }
+                            Console.WriteLine($"     Longest streak for '{name8}': {habit8.LongestStreak()} days.");
                         else Console.WriteLine("     Habit not found.");
                         break;
                     case 9:
                         if (!TryReadHabitName(out var name9)) break;
                         var habit9 = service.Get(name9);
                         if (habit9 != null)
-                        {
-                            habit9.CompletionRateLast7Days();
-                        }
+                            Console.WriteLine($"     Completion (7 days) for '{name9}': {habit9.CompletionRateLast7Days():F0}%");
                         else Console.WriteLine("     Habit not found.");
                         break;
                     case 0:
