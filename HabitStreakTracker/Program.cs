@@ -9,7 +9,7 @@ namespace HabitStreakTracker
         {
             Console.WriteLine("Welcome to Habit Streak Tracker!");
 
-            HabitRepositoryService service = new HabitRepositoryService();
+            InMemoryHabitRepository service = new InMemoryHabitRepository();
             string habitName = string.Empty;
 
             while (true)
@@ -23,6 +23,8 @@ namespace HabitStreakTracker
                 Console.WriteLine("| 5. Find a habit            |");
                 Console.WriteLine("| 6. Mark habit as done      |");
                 Console.WriteLine("| 7. Show current streak     |");
+                Console.WriteLine("| 8. Show longest streak     |");
+                Console.WriteLine("| 9. CompletionRateLast7Days |");
                 Console.WriteLine("| 0. Exit                    |");
                 Console.WriteLine("------------------------------");
 
@@ -55,14 +57,8 @@ namespace HabitStreakTracker
 
                         break;
                     case 2:
-                        Console.WriteLine(">    Enter the name of the habit: ");
-                        habitName = Console.ReadLine() ?? string.Empty;
-                        if (string.IsNullOrWhiteSpace(habitName))
-                        {
-                            Console.WriteLine("     Invalid habit name.");
-                            break;
-                        }
-                        var habit2 = service.Remove(habitName);
+                        if (!TryReadHabitName(out var name2)) break;
+                        var habit2 = service.Remove(name2);
                         if (habit2)
                         {
                             Console.WriteLine("     Habit removed successfully.");
@@ -70,14 +66,8 @@ namespace HabitStreakTracker
                         else Console.WriteLine("     Habit not found.");
                         break;
                     case 3:
-                        Console.WriteLine(">    Enter the name of the habit: ");
-                        habitName = Console.ReadLine() ?? string.Empty;
-                        if (string.IsNullOrWhiteSpace(habitName))
-                        {
-                            Console.WriteLine("     Invalid habit name.");
-                            break;
-                        }
-                        var habit3 = service.Get(habitName);
+                        if (!TryReadHabitName(out var name)) break;
+                        var habit3 = service.Get(name);
                         if (habit3 != null)
                         {
                             Console.WriteLine(habit3);
@@ -103,14 +93,8 @@ namespace HabitStreakTracker
                         else Console.WriteLine("     No habits found matching the search term.");
                         break;
                     case 6:
-                        Console.WriteLine(">    Enter the name of the habit: ");
-                        habitName = Console.ReadLine() ?? string.Empty;
-                        if (string.IsNullOrWhiteSpace(habitName))
-                        {
-                            Console.WriteLine("     Invalid habit name.");
-                            break;
-                        }
-                        var habit = service.Get(habitName);
+                        if (!TryReadHabitName(out var name6)) break;
+                        var habit = service.Get(name6);
                         if (habit != null)
                         {
                             habit.MarkDoneToday();
@@ -119,17 +103,29 @@ namespace HabitStreakTracker
                         else Console.WriteLine("     Habit not found.");
                         break;
                     case 7:
-                        Console.WriteLine(">    Enter the name of the habit: ");
-                        habitName = Console.ReadLine() ?? string.Empty;
-                        if (string.IsNullOrWhiteSpace(habitName))
-                        {
-                            Console.WriteLine("     Invalid habit name.");
-                            break;
-                        }
-                        int? streak = service.Get(habitName)?.CurrentStreak();
+                        if (!TryReadHabitName(out var name7)) break;
+                        int? streak = service.Get(name7)?.CurrentStreak();
                         if (streak.HasValue)
                         {
-                            Console.WriteLine($"     Current streak for '{habitName}': {streak.Value} days.");
+                            Console.WriteLine($"     Current streak for '{name7}': {streak.Value} days.");
+                        }
+                        else Console.WriteLine("     Habit not found.");
+                        break;
+                    case 8:
+                        if (!TryReadHabitName(out var name8)) break;
+                        var habit8 = service.Get(name8);
+                        if (habit8 != null)
+                        {
+                            habit8.LongestStreak();
+                        }
+                        else Console.WriteLine("     Habit not found.");
+                        break;
+                    case 9:
+                        if (!TryReadHabitName(out var name9)) break;
+                        var habit9 = service.Get(name9);
+                        if (habit9 != null)
+                        {
+                            habit9.CompletionRateLast7Days();
                         }
                         else Console.WriteLine("     Habit not found.");
                         break;
@@ -141,6 +137,20 @@ namespace HabitStreakTracker
                         break;
                 }
             }
+        }
+
+        static bool TryReadHabitName(out string name)
+        {
+            Console.WriteLine(">    Enter the name of the habit: ");
+            string? input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                Console.WriteLine("     Invalid habit name.");
+                name = string.Empty;
+                return false;
+            }
+            name = input.Trim();
+            return true;
         }
     }
 }

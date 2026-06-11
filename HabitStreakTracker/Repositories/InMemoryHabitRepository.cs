@@ -2,9 +2,9 @@
 
 namespace HabitStreakTracker.Services
 {
-    public class HabitRepositoryService : IHabitRepository
+    public class InMemoryHabitRepository : IHabitRepository
     {
-        private List<Habit> _habits = new List<Habit>();
+        private readonly List<Habit> _habits = new List<Habit>();
 
 
         public void Add(Habit habit)
